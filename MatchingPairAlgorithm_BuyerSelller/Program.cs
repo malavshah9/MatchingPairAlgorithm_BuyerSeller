@@ -19,134 +19,59 @@ namespace MatchingPairAlgorithm_BuyerSelller
     }
     class Program
     {
-        public void Solve(Queue<Party> BiddingQueue,Boolean isChanged)
-        {
-            Party temp = BiddingQueue.Peek();
-            if (temp.isBuyer)
-            {
-                foreach(Party p in BiddingQueue)
-                {
-                    if (p.isSeller)
-                    {
-                        if (p.price == temp.price)
-                        {
-                            BiddingQueue.Dequeue();
-                            Queue<Party> tempQueue = new Queue<Party>();
-                            while(BiddingQueue.Count!=0)
-                            {
-                                Party temp2 = BiddingQueue.Peek();
-                                if (temp2 == p)
-                                {
-                                    break;
-                                }
-                                else
-                                {
-                                    tempQueue.Enqueue(BiddingQueue.Dequeue());
-                                }
-                            }
-                            if (BiddingQueue.Count != 0)
-                                BiddingQueue.Dequeue();
-                            if (BiddingQueue.Count != 0)
-                            {
-                                while (BiddingQueue.Count != 0)
-                                {
-                                    tempQueue.Enqueue(BiddingQueue.Dequeue());
-                                }
-                            }
-                            BiddingQueue = tempQueue;
-                        }
-                        else if (p.price < temp.price)
-                        {
-                            temp.price = temp.price - p.price;
-                            Queue<Party> tempQueue = new Queue<Party>();
-                            while (BiddingQueue.Count != 0)
-                            {
-                                Party temp2 = BiddingQueue.Peek();
-                                if (temp2 == p)
-                                {
-                                    break;
-                                }
-                                else
-                                {
-                                    tempQueue.Enqueue(BiddingQueue.Dequeue());
-                                }
-                            }
-                            if (BiddingQueue.Count != 0)
-                                BiddingQueue.Dequeue();
-                            if (BiddingQueue.Count != 0)
-                            {
-                                while (BiddingQueue.Count != 0)
-                                {
-                                    tempQueue.Enqueue(BiddingQueue.Dequeue());
-                                }
-                            }
-                            BiddingQueue = tempQueue;
-                        }
-                        else
-                        {
-                            BiddingQueue.Dequeue();
-                            Queue<Party> tempQueue = new Queue<Party>();
-                            while (BiddingQueue.Count != 0)
-                            {
-                                Party temp2 = BiddingQueue.Peek();
-                                if (temp2 == p)
-                                {
-                                    break;
-                                }
-                                else
-                                {
-                                    tempQueue.Enqueue(BiddingQueue.Dequeue());
-                                }
-                            }
-                            if (BiddingQueue.Count != 0)
-                            {
-                                Party y = BiddingQueue.Peek();
-                                y.price = y.price - temp.price;
-                            }
-                            if (BiddingQueue.Count != 0)
-                            {
-                                while (BiddingQueue.Count != 0)
-                                {
-                                    tempQueue.Enqueue(BiddingQueue.Dequeue());
-                                }
-                            }
-                            BiddingQueue = tempQueue;
-                        }
-                    }
-                }
-            }
-        }
         static void Main(string[] args)
         {
             char input = default(char);
-            Queue<Party> BiddingQueue = new Queue<Party>();
+            Queue<Party> SellerQueue = new Queue<Party>();
+            Queue<Party> BuyerQueue = new Queue<Party>();
             while (input != 'Y')
             {
+                Console.WriteLine(" Enter Price of seller: ");
+                int price = Int32.Parse(Console.ReadLine());
+                SellerQueue.Enqueue(new Party(price,false,true));
                 Console.WriteLine("Enter 'Y' to exit from the input: ");
-                Console.WriteLine(" Enter Price: ");
-                int price = Console.Read();
-                Console.WriteLine(" Is Buyer: Press 1 for Yes/ 2 for No ");
-                int isBuyerInt = Console.Read();
-                Party p;
-                if(isBuyerInt == 1 )
+                input = Console.ReadLine().ToCharArray()[0];
+            }
+            input = 'A';
+            Program p = new Program();
+            while (input != 'Y')
+            {
+                Console.WriteLine(" Enter Price of buyer: ");
+                int price = Int32.Parse(Console.ReadLine());
+                BuyerQueue.Enqueue(new Party(price, true, false));
+                p.Solve(SellerQueue, BuyerQueue);
+                Console.WriteLine("Enter 'Y' to exit from the input: ");
+                input = Console.ReadLine().ToCharArray()[0];
+            }
+        }
+
+        private void Solve(Queue<Party> sellerQueue, Queue<Party> buyerQueue)
+        {
+            if (sellerQueue.Count == 0 || buyerQueue.Count==0)
+                Console.WriteLine(" No Seller/buyer to sell ");
+            else
+            {
+                Party dequedElementSeller = sellerQueue.Peek();
+                Party peekedElementBuyer = buyerQueue.Peek();
+                if (peekedElementBuyer.price == dequedElementSeller.price)
                 {
-                    p = new Party(price, true, false);
+                    dequedElementSeller = sellerQueue.Dequeue();
+                    peekedElementBuyer = buyerQueue.Dequeue();
+                    Console.WriteLine($" Traded betweem ${dequedElementSeller.price} and ${peekedElementBuyer.price}");
+                }
+                else if (peekedElementBuyer.price > dequedElementSeller.price)
+                {
+                    dequedElementSeller = sellerQueue.Dequeue();
+                    Console.WriteLine($" Traded betweem ${dequedElementSeller.price} and ${peekedElementBuyer.price}-${dequedElementSeller.price}");
+                    peekedElementBuyer.price -= dequedElementSeller.price;
                 }
                 else
                 {
-                    p = new Party(price, false, true);
+                    peekedElementBuyer = buyerQueue.Dequeue();
+                    Console.WriteLine($" Traded betweem ${dequedElementSeller.price} - ${peekedElementBuyer.price} and ${peekedElementBuyer.price}");
+                    dequedElementSeller.price -= peekedElementBuyer.price;
                 }
-                BiddingQueue.Enqueue(p);
-            }
-            Program p = new Program();
-            while(p.Solve(BiddingQueue, true))
-            {
-
-            }
-            Console.WriteLine(" --- Remaing Elements in Queue --- ");
-            foreach( Party p in BiddingQueue)
-            {
-                Console.WriteLine($" ${p.price} , ${p.isBuyer}  , ${p.isSeller}");
+                Solve(sellerQueue, buyerQueue);
             }
         }
     }
