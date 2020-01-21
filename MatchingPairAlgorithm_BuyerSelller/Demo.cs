@@ -84,13 +84,70 @@ namespace MatchingPairAlgorithm_BuyerSelller
             }
             return flag;
         }
+        public int withOneRangeCondition(party withOutRange, party withRange,int indexWithoutRange, int indexWithRange)
+        {
+            int flag = 0;
+            if(withOutRange.qty>=withRange.range)
+            {
+                if(withOutRange.qty>withRange.qty)
+                {
+                    if(buyers[indexWithoutRange]==withOutRange)
+                    {
+                        Console.WriteLine("Tradded Between Buyer" + buyers[indexWithoutRange].qty + " & seller" + sellers[indexWithRange].qty);
+                        buyers[indexWithoutRange].qty -= sellers[indexWithRange].qty;
+                        sellers.RemoveAt(indexWithRange);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Tradded Between Buyer" + buyers[indexWithRange].qty + " & seller" + sellers[indexWithoutRange].qty);
+                        sellers[indexWithoutRange].qty -= buyers[indexWithRange].qty;
+                        buyers.RemoveAt(indexWithRange);
+                    }
+                }
+                else if(withOutRange.qty ==withRange.qty)
+                {
+                    if (buyers[indexWithoutRange] == withOutRange)
+                    {
+                        Console.WriteLine("Tradded Between Buyer" + buyers[indexWithoutRange].qty + " & seller" + sellers[indexWithRange].qty);
+                        buyers.RemoveAt(indexWithoutRange);
+                        sellers.RemoveAt(indexWithRange);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Tradded Between Buyer" + buyers[indexWithRange].qty + " & seller" + sellers[indexWithoutRange].qty);
+                        buyers.RemoveAt(indexWithRange);
+                        sellers.RemoveAt(indexWithoutRange);
+                    }
+                }
+                else
+                {
+                    if (buyers[indexWithoutRange] == withOutRange)
+                    {
+                        Console.WriteLine("Tradded Between Buyer" + buyers[indexWithoutRange].qty + " & seller" + sellers[indexWithRange].qty);
+                        sellers[indexWithRange].qty-=buyers[indexWithoutRange].qty;
+                        buyers.RemoveAt(indexWithoutRange);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Tradded Between Buyer" + buyers[indexWithRange].qty + " & seller" + sellers[indexWithoutRange].qty);
+                        buyers[indexWithRange].qty -= sellers[indexWithoutRange].qty;
+                        sellers.RemoveAt(indexWithoutRange);
+                    }
+                }
+            }
+            else
+            {
+                flag = -1;
+            }
+            return flag;
+        }
         public void solve()
         {
             int i = 0,j=0,flag=0;
 
             while( i < buyers.Count)
             {
-                if (buyers.Count == 0 || sellers.Count == 0)
+                if (buyers.Count == 0 || sellers.Count == 0 || j>=sellers.Count)
                 {
                     break;
                 }
@@ -102,14 +159,14 @@ namespace MatchingPairAlgorithm_BuyerSelller
                         break;
                     }
                     //No Condtition at Buyer,No COndition At Seller
-                    if (buyers[i].a == 0 && sellers[i].a == 0 && buyers[i].range == 0 && sellers[i].range == 0)
+                    if (buyers[i].a == 0 && sellers[j].a == 0 && buyers[i].range == 0 && sellers[j].range == 0)
                     {
                         simplyUpdate(i, j);
                         continue;
                     }
 
                     //No condition at buyer,All Or None At Seller
-                    if (buyers[i].a == 0 && buyers[i].range == 0 && sellers[i].a != 0 && sellers[i].range == 0)
+                    if (buyers[i].a == 0 && buyers[i].range == 0 && sellers[j].a != 0 && sellers[j].range == 0)
                     {
                         flag = withOneALlOrNoneCondition(buyers[i], sellers[j], i, j);
                         if (flag == -1)
@@ -117,7 +174,36 @@ namespace MatchingPairAlgorithm_BuyerSelller
                             j++;
                         }
                     }
-                   
+
+                    //All or None At buyer,No condtition at seller
+                    if (buyers[i].a != 0 && buyers[i].range == 0 && sellers[j].a == 0 && sellers[j].range == 0)
+                    {
+                        flag = withOneALlOrNoneCondition(sellers[j],buyers[i], j, i);
+                        if (flag == -1)
+                        {
+                            i++;
+                        }
+                    }
+
+                    //No condition at buyer,Range at seller side
+                    if (buyers[i].a==0 && buyers[i].range == 0 && sellers[j].a == 0 && sellers[j].range != 0)
+                    {
+                        flag = withOneRangeCondition(buyers[i], sellers[j], i, j);
+                        if (flag == -1)
+                        {
+                            j++;
+                        }
+                    }
+
+                    //Range at Buyer,No condition at seller 
+                    if (buyers[i].a == 0 && buyers[i].range != 0 && sellers[j].a == 0 && sellers[j].range == 0)
+                    {
+                        flag = withOneRangeCondition(sellers[j], buyers[i], j,i);
+                        if (flag == -1)
+                        {
+                            i++;
+                        }
+                    }
                 }
             }
         }
@@ -137,16 +223,14 @@ namespace MatchingPairAlgorithm_BuyerSelller
             {
                 Console.WriteLine("Enter Qty");
                 qty =Int32.Parse(Console.ReadLine());
-               Console.WriteLine("Enter 1 for ALL or Nothing Condition ,0 for nothing");
+                Console.WriteLine("Enter 1 for ALL or Nothing Condition ,0 for nothing");
                 a = Int32.Parse(Console.ReadLine());
-               /* Console.WriteLine("Enter Ticket Size");
-                r = Int32.Parse(Console.ReadLine());*/
-                d.buyers.Add(new party(qty, a, 0));
+                Console.WriteLine("Enter Ticket Size");
+                r = Int32.Parse(Console.ReadLine());
+                d.buyers.Add(new party(qty, a, r));
                 Console.WriteLine("Enter -999 to Stop,anyother number to continue");
                 input = Int32.Parse(Console.ReadLine());
             }
-            party p = d.buyers[0];
-            Console.WriteLine(typeof(party).IsInstanceOfType(p));
             Console.WriteLine("Sellers:");
             input = 0;
             while (input != -999)
@@ -155,9 +239,9 @@ namespace MatchingPairAlgorithm_BuyerSelller
                 qty = Int32.Parse(Console.ReadLine());
                 Console.WriteLine("Enter 1 for ALL or Nothing Condition ,0 for nothing");
                 a = Int32.Parse(Console.ReadLine());
-                /*Console.WriteLine("Enter Ticket Size");
-                r = Int32.Parse(Console.ReadLine());*/
-                d.sellers.Add(new party(qty, a, 0));
+                Console.WriteLine("Enter Ticket Size");
+                r = Int32.Parse(Console.ReadLine());
+                d.sellers.Add(new party(qty, a, r));
                 Console.WriteLine("Enter -999 to Stop,anyother number to continue");
                 input = Int32.Parse(Console.ReadLine());
             }
