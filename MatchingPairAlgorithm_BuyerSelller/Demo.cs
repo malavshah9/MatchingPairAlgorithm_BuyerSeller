@@ -52,11 +52,13 @@ namespace MatchingPairAlgorithm_BuyerSelller
             {
                 if(buyers[indexWithOutCondition]==withoutCondition)
                 {
+                    Console.WriteLine("Tradded Between Buyer" + buyers[indexWithOutCondition].qty + " & seller" + sellers[indexWithCondition].qty);
                     buyers[indexWithOutCondition].qty -= sellers[indexWithCondition].qty;
                     sellers.RemoveAt(indexWithCondition);
                 }
                 else
                 {
+                    Console.WriteLine("Tradded Between Buyer" + buyers[indexWithCondition].qty + " & seller" + sellers[indexWithOutCondition].qty);
                     sellers[indexWithOutCondition].qty -= buyers[indexWithCondition].qty;
                     buyers.RemoveAt(indexWithCondition);
                 }
@@ -65,11 +67,15 @@ namespace MatchingPairAlgorithm_BuyerSelller
             {
                 if (buyers[indexWithOutCondition] == withoutCondition)
                 {
+                    Console.WriteLine("Tradded Between Buyer" + buyers[indexWithOutCondition].qty + " & seller" + sellers[indexWithCondition].qty);
                     buyers.RemoveAt(indexWithOutCondition);
+                    sellers.RemoveAt(indexWithCondition);
                 }
                 else
                 {
+                    Console.WriteLine("Tradded Between Buyer" + buyers[indexWithCondition].qty + " & seller" + sellers[indexWithOutCondition].qty);
                     sellers.RemoveAt(indexWithOutCondition);
+                    buyers.RemoveAt(indexWithCondition);
                 }
             }
             else
@@ -84,8 +90,6 @@ namespace MatchingPairAlgorithm_BuyerSelller
 
             while( i < buyers.Count)
             {
-
-
                 if (buyers.Count == 0 || sellers.Count == 0)
                 {
                     break;
@@ -101,6 +105,7 @@ namespace MatchingPairAlgorithm_BuyerSelller
                     if (buyers[i].a == 0 && sellers[i].a == 0 && buyers[i].range == 0 && sellers[i].range == 0)
                     {
                         simplyUpdate(i, j);
+                        continue;
                     }
 
                     //No condition at buyer,All Or None At Seller
