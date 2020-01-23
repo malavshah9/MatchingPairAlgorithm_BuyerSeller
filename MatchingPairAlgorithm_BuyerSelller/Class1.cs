@@ -31,11 +31,12 @@ namespace MatchingPairAlgorithm_BuyerSelller
         {
             int sum = 0;
             List<NewPartyWithId> updationList = new List<NewPartyWithId>();
-            for(int i = 0; i < length; i++)
+            Console.WriteLine(" Inside backTrack ");
+            for(int i = 0; i <= length; i++)
             {
                 if (list[i].a == 0 && list[i].range == 0)
                 {
-                    if (source.range == 0 || (source.range != 0 && source.range >= list[i].qty))
+                    if (source.range == 0 || (source.range != 0 && source.range <= list[i].qty))
                     {
                         sum += list[i].qty;
                         updationList.Add(list[i]);
@@ -61,40 +62,42 @@ namespace MatchingPairAlgorithm_BuyerSelller
                 {
                     for(int j = 0; j < updationList.Count; j++)
                     {
-                        if (updationList[j].a == 0 && updationList[j].range==0)
+                       if(updationList[j].a==0 && updationList[j].range == 0)
                         {
-                            if (updationList[j].qty <= sum)
+                            if (source.qty > updationList[j].qty && (source.range==0 || source.range<=updationList[j].qty))
                             {
-                                sum -= updationList[j].qty;
-                                updationList[j].qty -= updationList[j].qty;
+                                Console.WriteLine(" Source.qty  "+source.qty+" updationList[j].qty "+updationList[j].qty);
+                                source.qty -= updationList[j].qty;
+                                updationList[j].qty = 0;
                             }
-                            else
+                            else if((source.range == 0 || source.range <= updationList[j].qty))
                             {
-                                updationList[j].qty -= sum;
-                                sum = 0;
+                                Console.WriteLine(" Source.qty  " + source.qty + " updationList[j].qty " + updationList[j].qty);
+                                updationList[j].qty -= source.qty;
+                                source.qty = 0;
                             }
                         }
-                        else if(updationList[j].a!=0 && updationList[j].range == 0)
+                       else if (updationList[j].a!=0 && updationList[j].range==0)
                         {
-                            if (sum >= updationList[j].qty)
+                            if(source.qty >= updationList[j].qty && (source.range == 0 || source.range <= updationList[j].qty))
                             {
-                                sum -= updationList[j].qty;
-                                updationList[j].qty -= updationList[j].qty;
-                            }
-                            else
-                            {
-                                sum -= updationList[j].qty;
-                                updationList.Remove(updationList[j]);
+                                Console.WriteLine(" Source.qty  " + source.qty + " updationList[j].qty " + updationList[j].qty);
+                                source.qty -= updationList[j].qty;
+                                updationList[j].qty = 0;
                             }
                         }
                         else if(updationList[j].a!=0 && updationList[j].range != 0)
                         {
-                            if(sum>=updationList[j].range && sum>=updationList[j].qty && updationList[j].qty >= source.range)
+                            if(source.qty>=updationList[j].range && (source.range==0 || source.range <= updationList[j].qty))
                             {
-                                sum -= updationList[j].qty;
+                                Console.WriteLine(" Source.qty  " + source.qty + " updationList[j].qty " + updationList[j].qty);
+                                source.qty -= updationList[j].qty;
                                 updationList[j].qty = 0;
-                                updationList.Remove(updationList[j]);
                             }
+                        }
+                        if (source.qty <= 0)
+                        {
+                            Console.WriteLine(" Bid " + source.qty);
                         }
                     }
                     break;
