@@ -298,24 +298,33 @@ namespace MatchingPairAlgorithm_BuyerSelller
                 }
             }
         }
-        public void solve()
+        public void solve(List<NewPartyWithId> buyerss,List<NewPartyWithId> sellerss)
         {
-            loopThrough(sellers, buyers);
-            clean(buyers, 0);
-            clean(sellers, 0);
-            loopThrough(buyers, sellers);
-            clean(buyers, 0);
-            clean(sellers, 0);
+            loopThrough(buyerss, sellerss);
+            clean(buyerss, 0);
+            clean(sellerss, 0);
+            loopThrough(sellerss, buyerss);
+            clean(buyerss, 0);
+            clean(sellerss, 0);
             Console.WriteLine(" Reamining Sellers ");
-            for (int i = 0; i < buyers.Count; i++)
+            for (int i = 0; i < buyerss.Count; i++)
             {
-                Console.WriteLine(buyers[i].toString());
+                Console.WriteLine(buyerss[i].toString());
             }
             Console.WriteLine(" Reamining Buyers ");
-            for (int i = 0; i < sellers.Count; i++)
+            for (int i = 0; i < sellerss.Count; i++)
             {
-                Console.WriteLine(sellers[i].toString());
+                Console.WriteLine(sellerss[i].toString());
             }
+        }
+        public List<NewPartyWithId> copyList(List<NewPartyWithId> list)
+        {
+            List<NewPartyWithId> newlist = new List<NewPartyWithId>();
+            for(int i = 0; i < list.Count; i++)
+            {
+                newlist.Add(new NewPartyWithId(list[i].qty,list[i].a,list[i].range));
+            }
+            return newlist;
         }
         static void Main(string[] args)
         {
@@ -324,37 +333,45 @@ namespace MatchingPairAlgorithm_BuyerSelller
             int qty = 0;
             int a = 0;
             int r = 0;
-            NewDemo d = new NewDemo();
-            Console.WriteLine("Enter -999 to Stop");
-            Console.WriteLine("Buyers:");
-            while (input != -999)
+            char readI = default(char);
+            while (readI != 'q')
             {
-                Console.WriteLine("Enter Qty");
-                qty = Int32.Parse(Console.ReadLine());
-                Console.WriteLine("Enter 1 for ALL or Nothing Condition ,0 for nothing");
-                a = Int32.Parse(Console.ReadLine());
-                Console.WriteLine("Enter Ticket Size");
-                r = Int32.Parse(Console.ReadLine());
-                d.buyers.Add(new NewPartyWithId(qty, a, r));
-                Console.WriteLine("Enter -999 to Stop,anyother number to continue");
-                input = Int32.Parse(Console.ReadLine());
+                NewDemo d = new NewDemo();
+                Console.WriteLine("Enter -999 to Stop");
+                Console.WriteLine("Buyers:");
+                while (input != -999)
+                {
+                    Console.WriteLine("Enter Qty");
+                    qty = Int32.Parse(Console.ReadLine());
+                    Console.WriteLine("Enter 1 for ALL or Nothing Condition ,0 for nothing");
+                    a = Int32.Parse(Console.ReadLine());
+                    Console.WriteLine("Enter Ticket Size");
+                    r = Int32.Parse(Console.ReadLine());
+                    d.buyers.Add(new NewPartyWithId(qty, a, r));
+                    Console.WriteLine("Enter -999 to Stop,anyother number to continue");
+                    input = Int32.Parse(Console.ReadLine());
+                }
+                Console.WriteLine("Sellers:");
+                input = 0;
+                while (input != -999)
+                {
+                    Console.WriteLine("Enter Qty");
+                    qty = Int32.Parse(Console.ReadLine());
+                    Console.WriteLine("Enter 1 for ALL or Nothing Condition ,0 for nothing");
+                    a = Int32.Parse(Console.ReadLine());
+                    Console.WriteLine("Enter Ticket Size");
+                    r = Int32.Parse(Console.ReadLine());
+                    d.sellers.Add(new NewPartyWithId(qty, a, r));
+                    Console.WriteLine("Enter -999 to Stop,anyother number to continue");
+                    input = Int32.Parse(Console.ReadLine());
+                }
+                List<NewPartyWithId> copyBuyers = d.copyList(d.buyers);
+                List<NewPartyWithId> copySellers = d.copyList(d.sellers);
+                d.solve(d.buyers, d.sellers);
+                Console.WriteLine(" --- Reverse Result ---");
+                d.solve(copySellers, copyBuyers);
+                readI=(char)Console.ReadLine().ToCharArray()[0];
             }
-            Console.WriteLine("Sellers:");
-            input = 0;
-            while (input != -999)
-            {
-                Console.WriteLine("Enter Qty");
-                qty = Int32.Parse(Console.ReadLine());
-                Console.WriteLine("Enter 1 for ALL or Nothing Condition ,0 for nothing");
-                a = Int32.Parse(Console.ReadLine());
-                Console.WriteLine("Enter Ticket Size");
-                r = Int32.Parse(Console.ReadLine());
-                d.sellers.Add(new NewPartyWithId(qty, a, r));
-                Console.WriteLine("Enter -999 to Stop,anyother number to continue");
-                input = Int32.Parse(Console.ReadLine());
-            }
-            d.solve();
-            Console.ReadLine();
         }
     }
 }
