@@ -27,6 +27,7 @@ namespace MatchingPairAlgorithm_BuyerSelller
     {
         public List<NewPartyWithId> buyers = new List<NewPartyWithId>();
         public List<NewPartyWithId> sellers = new List<NewPartyWithId>();
+      
         public void backTrack(NewPartyWithId source,List<NewPartyWithId> list,int length)
         {
             int sum = 0;
@@ -36,7 +37,7 @@ namespace MatchingPairAlgorithm_BuyerSelller
             {
                 if (list[i].a == 0 && list[i].range == 0)
                 {
-                    if (source.range == 0 || (source.range != 0 && source.range <= list[i].qty))
+                    if (source.range == 0 || (source.range != 0 && source.range<=list[i].qty && source.range <= (source.qty-sum)))
                     {
                         sum += list[i].qty;
                         updationList.Add(list[i]);
@@ -44,7 +45,7 @@ namespace MatchingPairAlgorithm_BuyerSelller
                 }
                 else if(list[i].a!=0 && list[i].range == 0)
                 {
-                    if ((sum + list[i].qty) <= source.qty && (source.range==0 || (source.range<=list[i].qty)))
+                    if ((sum + list[i].qty) <= source.qty  && (source.range==0 || ( source.range <= list[i].qty && (source.range<= (source.qty - sum)))))
                     {
                         sum += list[i].qty;
                         updationList.Add(list[i]);
@@ -52,7 +53,7 @@ namespace MatchingPairAlgorithm_BuyerSelller
                 }
                 else if(list[i].a!=0 && list[i].range != 0)
                 {
-                    if((sum+list[i].qty)<=source.qty && ((source.range==0 && (source.qty-sum)>=list[i].range) || (source.range!=0 && source.range <= list[i].qty)))
+                    if((sum+list[i].qty)<=source.qty && ((source.range==0 && (source.qty-sum)>=list[i].range) || (source.range!=0 && source.range <= list[i].qty && source.range <= (source.qty - sum))))
                     {
                         sum += list[i].qty;
                         updationList.Add(list[i]);
@@ -278,7 +279,9 @@ namespace MatchingPairAlgorithm_BuyerSelller
                     }
                     else
                     {
-                        backTrack(source[i], destination, j);
+                        RecursiveApproach ra = new RecursiveApproach();
+                        ra.Recursive(j, destination, source[i], 0, new List<NewPartyWithId>());
+                        //backTrack(source[i], destination, j);
                     }
                 }
             }
