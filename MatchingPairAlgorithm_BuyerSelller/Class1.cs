@@ -280,7 +280,15 @@ namespace MatchingPairAlgorithm_BuyerSelller
                     else
                     {
                         RecursiveApproach ra = new RecursiveApproach();
-                        ra.Recursive(j, destination, source[i], 0, new List<NewPartyWithId>());
+                        int tempQty = source[i].qty;
+                        if(ra.subset_sum(source[i].qty,0, destination, source[i]))
+                        {
+                            source[i].qty = 0;
+                        }
+                        else
+                        {
+                            source[i].qty = tempQty;
+                        }
                         //backTrack(source[i], destination, j);
                     }
                 }
