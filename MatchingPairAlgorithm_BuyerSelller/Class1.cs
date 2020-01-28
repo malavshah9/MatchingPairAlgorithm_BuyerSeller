@@ -25,9 +25,12 @@ namespace MatchingPairAlgorithm_BuyerSelller
     }
     class NewDemo
     {
-        public List<NewPartyWithId> buyers = new List<NewPartyWithId>();
-        public List<NewPartyWithId> sellers = new List<NewPartyWithId>();
-      
+        System.IO.StreamWriter file;
+        String line;
+        public NewDemo()
+        {
+            file=new System.IO.StreamWriter(@"C:\Users\Public\Documents\Answers.txt");
+        }
         public void backTrack(NewPartyWithId source,List<NewPartyWithId> list,int length)
         {
             int sum = 0;
@@ -107,6 +110,7 @@ namespace MatchingPairAlgorithm_BuyerSelller
         }
         public void updateQty(NewPartyWithId partyA, NewPartyWithId partyB, int trade)
         {
+            //Console.WriteLine($" updated here , ${partyA.qty} and ${partyB.qty}");
             partyA.qty -= trade;
             partyB.qty -= trade;
         }
@@ -265,23 +269,69 @@ namespace MatchingPairAlgorithm_BuyerSelller
             }
             return newQty;
         }
+        public void ReadFromFile()
+        {
+            string[] lines = System.IO.File.ReadAllLines(@"C:\Users\Public\Documents\TestCases.txt");
+            int noOfTestcases = Int32.Parse(lines[0]);
+            int lineNoForNoOfBuyerSeller = 1;
+            line = $" ---No of Testcases--- ${noOfTestcases}";
+            Console.WriteLine(line);
+            file.WriteLine(line);
+            while (lineNoForNoOfBuyerSeller < lines.Length)
+            {
+                List<NewPartyWithId> buyers = new List<NewPartyWithId>();
+                List<NewPartyWithId> sellers = new List<NewPartyWithId>();
+                line = "--- New TestCase ---";
+                Console.WriteLine(line);
+                file.WriteLine(line);
+                String[] parsing = lines[lineNoForNoOfBuyerSeller].Split(' ');
+                int noOfBuyers = Int32.Parse(parsing[0]);
+                int noOfSellers = Int32.Parse(parsing[1]);
+                for (int i = lineNoForNoOfBuyerSeller+1; i <= lineNoForNoOfBuyerSeller+noOfBuyers; i++)
+                {
+                    String[] buyerParsing = lines[i].Split(' ');
+                    Console.WriteLine(" Parsing Line No "+ i);
+                    Console.WriteLine(lines[i]);
+                    buyers.Add(new NewPartyWithId(Int32.Parse(buyerParsing[0]), Int32.Parse(buyerParsing[1]), Int32.Parse(buyerParsing[2])));
+                }
+                for (int j = lineNoForNoOfBuyerSeller+noOfBuyers+1; j <= lineNoForNoOfBuyerSeller + noOfBuyers + noOfSellers; j++)
+                {
+                    String[] sellerParsing = lines[j].Split(' ');
+                    sellers.Add(new NewPartyWithId(Int32.Parse(sellerParsing[0]), Int32.Parse(sellerParsing[1]), Int32.Parse(sellerParsing[2])));
+                }
+                List<NewPartyWithId> copyBuyers = copyList(buyers);
+                List<NewPartyWithId> copySellers = copyList(sellers);
+                line = "--- In Actual Order ---";
+                Console.WriteLine(line);
+                file.WriteLine(line);
+                solve(buyers, sellers);
+                line = "--- In reverse Order ---";
+                Console.WriteLine(line);
+                file.WriteLine(line);
+                solve(copyBuyers, copySellers);
+                lineNoForNoOfBuyerSeller += noOfBuyers + noOfSellers+1 ;
+            }
+        }
         public void loopThrough(List<NewPartyWithId> source, List<NewPartyWithId> destination)
         {
             for (int i = 0; i < source.Count; i++)
             {
+                int temp = source[i].qty;
                 for (int j = 0; j < destination.Count; j++)
                 {
                     int trade = isCompatibleGivesTrade(source[i], destination[j]);
                     if (trade != -1)
                     {
-                        Console.WriteLine($"Trade between {source[i].qty} and {destination[j].qty} with trade {trade}");
+                        line = $"Trade between {source[i].qty} and {destination[j].qty} with trade {trade}";
+                        Console.WriteLine(line);
+                        file.WriteLine(line);
                         updateQty(source[i], destination[j], trade);
                     }
                     else
                     {
                         RecursiveApproach ra = new RecursiveApproach();
                         int tempQty = source[i].qty;
-                        if(ra.subset_sum(source[i].qty,0, destination, source[i]))
+                        if (ra.subset_sum(source[i].qty, 0, destination, source[i]))
                         {
                             source[i].qty = 0;
                         }
@@ -289,9 +339,21 @@ namespace MatchingPairAlgorithm_BuyerSelller
                         {
                             source[i].qty = tempQty;
                         }
-                        //backTrack(source[i], destination, j);
                     }
                 }
+                //if (source[i].qty == temp)
+                //{
+                //        RecursiveApproach ra = new RecursiveApproach();
+                //        int tempQty = source[i].qty;
+                //        if (ra.subset_sum(source[i].qty, 0, destination, source[i]))
+                //        {
+                //            source[i].qty = 0;
+                //        }
+                //        else
+                //        {
+                //            source[i].qty = tempQty;
+                //        }
+                //}
             }
         }
         public void clean(List<NewPartyWithId> list, int index)
@@ -317,15 +379,23 @@ namespace MatchingPairAlgorithm_BuyerSelller
             loopThrough(sellerss, buyerss);
             clean(buyerss, 0);
             clean(sellerss, 0);
-            Console.WriteLine(" Reamining Sellers ");
+            line = "--- Remaing Buyers ---";
+            Console.WriteLine(line);
+            file.WriteLine(line);
             for (int i = 0; i < buyerss.Count; i++)
             {
-                Console.WriteLine(buyerss[i].toString());
+                line = buyerss[i].toString();
+                Console.WriteLine(line);
+                file.WriteLine(line);
             }
-            Console.WriteLine(" Reamining Buyers ");
+            line = "--- Remaing Sellers ---";
+            Console.WriteLine(line);
+            file.WriteLine(line);
             for (int i = 0; i < sellerss.Count; i++)
             {
-                Console.WriteLine(sellerss[i].toString());
+                line = sellerss[i].toString();
+                Console.WriteLine(line);
+                file.WriteLine(line);
             }
         }
         public List<NewPartyWithId> copyList(List<NewPartyWithId> list)
@@ -337,9 +407,10 @@ namespace MatchingPairAlgorithm_BuyerSelller
             }
             return newlist;
         }
-        static void Main(string[] args)
+        public void consoleWorks()
         {
-
+            List<NewPartyWithId> buyers = new List<NewPartyWithId>();
+            List<NewPartyWithId> sellers = new List<NewPartyWithId>();
             int input = default(int);
             int qty = 0;
             int a = 0;
@@ -347,7 +418,6 @@ namespace MatchingPairAlgorithm_BuyerSelller
             char readI = default(char);
             while (readI != 'q')
             {
-                NewDemo d = new NewDemo();
                 Console.WriteLine("Enter -999 to Stop");
                 Console.WriteLine("Buyers:");
                 while (input != -999)
@@ -358,7 +428,7 @@ namespace MatchingPairAlgorithm_BuyerSelller
                     a = Int32.Parse(Console.ReadLine());
                     Console.WriteLine("Enter Ticket Size");
                     r = Int32.Parse(Console.ReadLine());
-                    d.buyers.Add(new NewPartyWithId(qty, a, r));
+                    buyers.Add(new NewPartyWithId(qty, a, r));
                     Console.WriteLine("Enter -999 to Stop,anyother number to continue");
                     input = Int32.Parse(Console.ReadLine());
                 }
@@ -372,17 +442,30 @@ namespace MatchingPairAlgorithm_BuyerSelller
                     a = Int32.Parse(Console.ReadLine());
                     Console.WriteLine("Enter Ticket Size");
                     r = Int32.Parse(Console.ReadLine());
-                    d.sellers.Add(new NewPartyWithId(qty, a, r));
+                    sellers.Add(new NewPartyWithId(qty, a, r));
                     Console.WriteLine("Enter -999 to Stop,anyother number to continue");
                     input = Int32.Parse(Console.ReadLine());
                 }
-                List<NewPartyWithId> copyBuyers = d.copyList(d.buyers);
-                List<NewPartyWithId> copySellers = d.copyList(d.sellers);
-                d.solve(d.buyers, d.sellers);
+                List<NewPartyWithId> copyBuyers = copyList(buyers);
+                List<NewPartyWithId> copySellers = copyList(sellers);
+                solve(buyers, sellers);
                 Console.WriteLine(" --- Reverse Result ---");
-                d.solve(copySellers, copyBuyers);
-                readI=(char)Console.ReadLine().ToCharArray()[0];
+                solve(copySellers, copyBuyers);
+                readI = (char)Console.ReadLine().ToCharArray()[0];
             }
+        }
+        static void Main(string[] args)
+        {
+            NewDemo nd = new NewDemo();
+            int input=0;
+            Console.WriteLine(" Enter 1 for File I/o and 2 for Console I/o:");
+            input = Int32.Parse(Console.ReadLine());
+            if (input == 1)
+                nd.ReadFromFile();
+            else if (input == 2)
+                nd.consoleWorks();
+            Console.WriteLine(" All Done!!!");
+            Console.ReadLine();
         }
     }
 }

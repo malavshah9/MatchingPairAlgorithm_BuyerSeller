@@ -8,61 +8,158 @@ namespace MatchingPairAlgorithm_BuyerSelller
 {
     class RecursiveApproach
     {
-        public Boolean subset_sum(int remaining_amount,int starting_index, List<NewPartyWithId> list,NewPartyWithId source)
+        //public Boolean subset_sum(int remaining_amount,int starting_index, List<NewPartyWithId> list,NewPartyWithId source)
+        //{
+        //    if (remaining_amount < source.range)
+        //        return false;
+        //    if (remaining_amount == 0)
+        //    {
+        //        source.qty = 0;
+        //        return true;
+        //    }
+        //    if ((source.range != 0 && remaining_amount < source.range) || remaining_amount<0)
+        //        return false;
+        //    if (list.Count - starting_index == 1)
+        //    {
+        //        if (list[starting_index].range == 0 && list[starting_index].a == 0 && (source.range == 0 || source.range <= list[starting_index].qty))
+        //        {
+        //            if (remaining_amount <= list[starting_index].qty)
+        //            {
+        //                list[starting_index].qty -= remaining_amount;
+        //                source.qty = 0;
+        //                return true;
+        //            }
+        //            else
+        //            {
+        //                return false;
+        //            }
+        //        }
+        //        else if (list[starting_index].range == 0 && list[starting_index].a != 0 && (source.range == 0 || source.range <= list[starting_index].qty))
+        //        {
+        //            if (remaining_amount == list[starting_index].qty)
+        //            {
+        //                list[starting_index].qty -= remaining_amount;
+        //                source.qty = 0;
+        //                return true;
+        //            }
+        //            else
+        //            {
+        //                return false;
+        //            }
+        //        }
+        //        else if (list[starting_index].range != 0 && list[starting_index].a == 0 && (source.range == 0 || source.range <= list[starting_index].qty))
+        //        {
+        //            if (remaining_amount <=list[starting_index].qty && list[starting_index].range<= remaining_amount)
+        //            {
+        //                list[starting_index].qty -= remaining_amount;
+        //                source.qty = 0;
+        //                return true;
+        //            }
+        //            else
+        //            {
+        //                return false;
+        //            }
+        //        }
+        //        else if(list[starting_index].range!=0 && list[starting_index].a!=0 && (source.range==0 || source.range<=list[starting_index].qty))
+        //        {
+        //            if (remaining_amount >= list[starting_index].range && remaining_amount<=list[starting_index].qty)
+        //            {
+        //                list[starting_index].qty -= remaining_amount;
+        //                source.qty = 0;
+        //                return true;
+        //            }
+        //            else
+        //            {
+        //                return false;
+        //            }
+        //        }
+        //        else
+        //            return false;
+        //    }
+        //    Boolean result_1=false;
+        //    Boolean result_2=false;
+        //    int tempQuantity = list[starting_index].qty;
+        //    if (list[starting_index].range == 0 && list[starting_index].a == 0 && (source.range == 0 || source.range <= list[starting_index].qty))
+        //    {
+        //        if (remaining_amount <= list[starting_index].qty)
+        //        {
+        //            list[starting_index].qty -= remaining_amount;
+        //            source.qty = 0;
+        //            result_1 = true;
+        //        }
+        //        else
+        //        {
+        //            int startQty = 1;
+        //            if (source.range != 0)
+        //            {
+        //                startQty = source.range;
+        //            }
+        //            for(int i = startQty; i <= list[starting_index].qty; i++)
+        //            {
+        //                list[starting_index].qty = tempQuantity - i;
+        //                result_1 = subset_sum(remaining_amount - i, starting_index + 1, list, source);
+        //                if(result_1)
+        //                {
+        //                    break;
+        //                }
+        //            }
+        //        }
+        //    }
+        //    else if (list[starting_index].range == 0 && list[starting_index].a != 0 && (source.range == 0 || source.range <= list[starting_index].qty))
+        //    {
+        //        list[starting_index].qty = 0;
+        //        result_1 = subset_sum(remaining_amount - list[starting_index].qty, starting_index + 1, list, source);
+        //    }
+        //    else if (list[starting_index].range != 0 && list[starting_index].a != 0 && (source.range == 0 || source.range <= list[starting_index].qty))
+        //    {
+        //        if (list[starting_index].qty == remaining_amount)
+        //        {
+        //            list[starting_index].qty = 0;
+        //            source.qty = 0;
+        //            result_1 = true;
+        //        }
+        //    }
+        //    else if (list[starting_index].range != 0 && list[starting_index].a == 0 && (source.range == 0 || source.range <= list[starting_index].qty))
+        //    {
+        //        if (remaining_amount >= list[starting_index].range && remaining_amount <= list[starting_index].qty)
+        //        {
+        //            list[starting_index].qty -= remaining_amount;
+        //            source.qty = 0;
+        //            result_1 = true;
+        //        }
+        //        else if (remaining_amount >= list[starting_index].range)
+        //        {
+        //            for(int i=Math.Max(source.range, list[starting_index].range); i <= list[starting_index].qty; i++)
+        //            {
+        //                list[starting_index].qty = tempQuantity - i;
+        //                result_1 = subset_sum(remaining_amount - i, starting_index + 1, list, source);
+        //                if (result_1)
+        //                {
+        //                    break;
+        //                }
+        //            }
+        //        }
+        //    }
+        //    if (result_1 == false)
+        //    {
+        //        list[starting_index].qty = tempQuantity;
+        //        result_2 = subset_sum(remaining_amount, starting_index + 1, list, source);
+        //    }
+        //    return result_1 || result_2;
+        //}
+        public Boolean subset_sum(int remaining_amount, int starting_index, List<NewPartyWithId> list, NewPartyWithId source)
         {
             if (remaining_amount == 0)
             {
                 source.qty = 0;
                 return true;
             }
-            if (source.range != 0 && remaining_amount < source.range || remaining_amount<0)
+            if ( (source.range!=0 && remaining_amount < source.range) || starting_index >= list.Count)
                 return false;
-            if (list.Count - starting_index == 1)
-            {
-                if (list[starting_index].range == 0 && list[starting_index].a == 0 && (source.range == 0 || source.range <= list[starting_index].qty))
-                {
-                    if (remaining_amount <= list[starting_index].qty)
-                    {
-                        list[starting_index].qty -= remaining_amount;
-                        source.qty = 0;
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else if (list[starting_index].range == 0 && list[starting_index].a != 0 && (source.range == 0 || source.range <= list[starting_index].qty))
-                {
-                    if (remaining_amount == list[starting_index].qty)
-                    {
-                        list[starting_index].qty -= remaining_amount;
-                        source.qty = 0;
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else if(list[starting_index].range!=0 && list[starting_index].a!=0 && (source.range==0 || source.range<=list[starting_index].qty))
-                {
-                    if (remaining_amount >= list[starting_index].range && remaining_amount<=list[starting_index].qty)
-                    {
-                        list[starting_index].qty -= remaining_amount;
-                        source.qty = 0;
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else
-                    return false;
-            }
-            Boolean result_1=false;
-            Boolean result_2=false;
+            if ((source.range != 0 && remaining_amount < source.range) || remaining_amount < 0)
+                return false;
+            Boolean result_1 = false;
+            Boolean result_2 = false;
             int tempQuantity = list[starting_index].qty;
             if (list[starting_index].range == 0 && list[starting_index].a == 0 && (source.range == 0 || source.range <= list[starting_index].qty))
             {
@@ -74,29 +171,39 @@ namespace MatchingPairAlgorithm_BuyerSelller
                 }
                 else
                 {
-                    int startQty = 1;
+                    int endQty = 1;
                     if (source.range != 0)
                     {
-                        startQty = source.range;
+                        endQty = source.range;
                     }
-                    for(int i = startQty; i <= list[starting_index].qty; i++)
+                    for (int i = list[starting_index].qty; i >= endQty; i--)
                     {
-                        int temp = list[starting_index].qty;
-                        list[starting_index].qty -= i;
+                        list[starting_index].qty = tempQuantity-i;
                         result_1 = subset_sum(remaining_amount - i, starting_index + 1, list, source);
-                        if (result_1 == false)
+                        if (result_1)
                         {
-                            list[starting_index].qty = temp;
+                            break;
                         }
                     }
                 }
             }
             else if (list[starting_index].range == 0 && list[starting_index].a != 0 && (source.range == 0 || source.range <= list[starting_index].qty))
             {
-                list[starting_index].qty = 0;
-                result_1 = subset_sum(remaining_amount - list[starting_index].qty, starting_index + 1, list, source);
+                if (list[starting_index].qty <= remaining_amount)
+                {
+                    list[starting_index].qty = 0;
+                    result_1 = subset_sum(remaining_amount - tempQuantity, starting_index + 1, list, source);
+                }
             }
             else if (list[starting_index].range != 0 && list[starting_index].a != 0 && (source.range == 0 || source.range <= list[starting_index].qty))
+            {
+                if (list[starting_index].qty <= remaining_amount)
+                {
+                    list[starting_index].qty = 0;
+                    result_1 = subset_sum(remaining_amount - tempQuantity, starting_index + 1, list, source);
+                }
+            }
+            else if (list[starting_index].range != 0 && list[starting_index].a == 0 && (source.range == 0 || source.range <= list[starting_index].qty))
             {
                 if (remaining_amount >= list[starting_index].range && remaining_amount <= list[starting_index].qty)
                 {
@@ -104,21 +211,18 @@ namespace MatchingPairAlgorithm_BuyerSelller
                     source.qty = 0;
                     result_1 = true;
                 }
-                else
+                else if (remaining_amount >= list[starting_index].range)
                 {
-                    int startQty = list[starting_index].range;
-                    if (source.range != 0)
+                    int endQty = Math.Max(source.range, list[starting_index].range);
+                    if (endQty == 0)
+                        endQty = 1;
+                    for (int i = list[starting_index].qty; i >= endQty; i--)
                     {
-                        startQty = Math.Max(list[starting_index].range,source.range);
-                    }
-                    for (int i = startQty; i <= list[starting_index].qty; i++)
-                    {
-                        int temp = list[starting_index].qty;
-                        list[starting_index].qty -= i;
+                        list[starting_index].qty = tempQuantity - i;
                         result_1 = subset_sum(remaining_amount - i, starting_index + 1, list, source);
-                        if (result_1 == false)
+                        if (result_1)
                         {
-                            list[starting_index].qty = temp;
+                            break;
                         }
                     }
                 }
