@@ -120,7 +120,7 @@ namespace MatchingPairAlgorithm_BuyerSelller
             int newQty = -1;
             // Checks the condition of both party
             // Returns the new quantity from party iff they are compatible
-            if (party1.qty == 0 || party2.qty == 0)
+            if (party1.qty == 0 || party2.qty == 0 || (party1.range!=0 && party1.qty<party1.range) || (party2.range!=0 && party2.qty<party2.range))
                 return newQty;
             if (party1.a == 0 && party2.a == 0 && party1.range == 0 && party2.range == 0)
             {
@@ -327,33 +327,25 @@ namespace MatchingPairAlgorithm_BuyerSelller
                         file.WriteLine(line);
                         updateQty(source[i], destination[j], trade);
                     }
+                }
+            }
+            clean(source, 0);
+            clean(destination, 0);
+            for(int i = 0; i < source.Count; i++)
+            {
+                for(int j = 0; j < destination.Count; j++)
+                {
+                    RecursiveApproach ra = new RecursiveApproach();
+                    int tempQty = source[i].qty;
+                    if (ra.subset_sum(source[i].qty, 0, destination, source[i]))
+                    {
+                        source[i].qty = 0;
+                    }
                     else
                     {
-                        RecursiveApproach ra = new RecursiveApproach();
-                        int tempQty = source[i].qty;
-                        if (ra.subset_sum(source[i].qty, 0, destination, source[i]))
-                        {
-                            source[i].qty = 0;
-                        }
-                        else
-                        {
-                            source[i].qty = tempQty;
-                        }
+                        source[i].qty = tempQty;
                     }
                 }
-                //if (source[i].qty == temp)
-                //{
-                //        RecursiveApproach ra = new RecursiveApproach();
-                //        int tempQty = source[i].qty;
-                //        if (ra.subset_sum(source[i].qty, 0, destination, source[i]))
-                //        {
-                //            source[i].qty = 0;
-                //        }
-                //        else
-                //        {
-                //            source[i].qty = tempQty;
-                //        }
-                //}
             }
         }
         public void clean(List<NewPartyWithId> list, int index)
