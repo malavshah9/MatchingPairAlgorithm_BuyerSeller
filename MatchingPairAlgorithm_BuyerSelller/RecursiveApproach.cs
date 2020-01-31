@@ -147,14 +147,30 @@ namespace MatchingPairAlgorithm_BuyerSelller
         //    }
         //    return result_1 || result_2;
         //}
-        public Boolean subset_sum(int remaining_amount, int starting_index, List<NewPartyWithId> list, NewPartyWithId source)
+        //public int knapSack(int remaining, List<NewPartyWithId> list)
+        //{
+        //    int[,] K = new int[list.Count + 1, remaining + 1];
+        //    for (int i = 0; i < list.Count; i++)
+        //    {
+        //        for (int j = 0; j < remaining; j++)
+        //        {
+        //            if (i == 0 || j == 0)
+        //                K[i,j] = 0;
+        //            else if()
+        //        }
+        //    }
+
+        //    return K[list.Count, remaining];
+
+        //}
+        public Boolean subset_sum(int remaining_amount, int starting_index, List<NewPartyWithId> list, NewPartyWithId source,int source_index,List<NewPartyWithId> source_list)
         {
             if (remaining_amount == 0)
             {
                 source.qty = 0;
                 return true;
             }
-            if ( (source.range!=0 && remaining_amount < source.range) || starting_index >= list.Count)
+            if ( (source.range!=0 && remaining_amount < source.range) || starting_index >= list.Count || source_index>=source_list.Count)
                 return false;
             if ((source.range != 0 && remaining_amount < source.range) || remaining_amount < 0)
                 return false;
@@ -179,7 +195,7 @@ namespace MatchingPairAlgorithm_BuyerSelller
                     for (int i = list[starting_index].qty; i >= endQty; i--)
                     {
                         list[starting_index].qty = tempQuantity-i;
-                        result_1 = subset_sum(remaining_amount - i, starting_index + 1, list, source);
+                        result_1 = subset_sum(remaining_amount - i, starting_index + 1, list, source, source_index,source_list);
                         if (result_1)
                         {
                             break;
@@ -192,7 +208,24 @@ namespace MatchingPairAlgorithm_BuyerSelller
                 if (list[starting_index].qty <= remaining_amount)
                 {
                     list[starting_index].qty = 0;
-                    result_1 = subset_sum(remaining_amount - tempQuantity, starting_index + 1, list, source);
+                    result_1 = subset_sum(remaining_amount - tempQuantity, starting_index + 1, list, source, source_index,source_list);
+                }
+                else
+                {
+                    int tempQty = list[starting_index].qty;
+                    list[starting_index].qty -= remaining_amount;
+                    int tempSourceQty = source.qty;
+                    source.qty = 0;
+                    if (subset_sum(list[starting_index].qty, 0, source_list, list[starting_index], starting_index, list))
+                    {
+                        list[starting_index].qty = 0;
+                        result_1 = true;
+                    }
+                    else
+                    {
+                        source.qty = tempSourceQty;
+                        list[starting_index].qty = tempQty;
+                    }
                 }
             }
             else if (list[starting_index].range != 0 && list[starting_index].a != 0 && (source.range == 0 || source.range <= list[starting_index].qty))
@@ -200,7 +233,7 @@ namespace MatchingPairAlgorithm_BuyerSelller
                 if (list[starting_index].qty <= remaining_amount)
                 {
                     list[starting_index].qty = 0;
-                    result_1 = subset_sum(remaining_amount - tempQuantity, starting_index + 1, list, source);
+                    result_1 = subset_sum(remaining_amount - tempQuantity, starting_index + 1, list, source, source_index,source_list);
                 }
             }
             else if (list[starting_index].range != 0 && list[starting_index].a == 0 && (source.range == 0 || source.range <= list[starting_index].qty))
@@ -219,7 +252,7 @@ namespace MatchingPairAlgorithm_BuyerSelller
                     for (int i = list[starting_index].qty; i >= endQty; i--)
                     {
                         list[starting_index].qty = tempQuantity - i;
-                        result_1 = subset_sum(remaining_amount - i, starting_index + 1, list, source);
+                        result_1 = subset_sum(remaining_amount - i, starting_index + 1, list, source, source_index,source_list);
                         if (result_1)
                         {
                             break;
@@ -227,114 +260,30 @@ namespace MatchingPairAlgorithm_BuyerSelller
                     }
                 }
             }
+            //else if(list[starting_index].a!=0 && list[starting_index].qty >= remaining_amount && remaining_amount>=list[starting_index].range)
+            //{
+            //    if (list[starting_index].range == 0)
+            //    {
+            //        for(int i = remaining_amount; i >= 1; i--)
+            //        {
+            //            if (subset_sum(i, source_index + 1, source_list, source, source_index, list))
+            //            {
+            //                result_1 = true;
+            //                break;
+            //            }
+            //        }
+            //    }
+            //    else
+            //    {
+            //        // Put that range condition here
+            //    }
+            //}
             if (result_1 == false)
             {
                 list[starting_index].qty = tempQuantity;
-                result_2 = subset_sum(remaining_amount, starting_index + 1, list, source);
+                result_2 = subset_sum(remaining_amount, starting_index + 1, list, source, source_index,source_list);
             }
             return result_1 || result_2;
-        }
-        public Boolean Recursive(int index,List<NewPartyWithId> list,NewPartyWithId source,int sum,List<NewPartyWithId> updationList)
-        {
-            Console.WriteLine(" source " + source.toString());
-            for(int i = 0; i < updationList.Count; i++)
-            {
-                Console.WriteLine(updationList[i].toString());
-            }
-            if (source.qty == 0)
-                return true;
-            if (index >= list.Count && sum != 0)
-                return false;
-            if (sum >= source.qty)
-            {
-                int take = 0;
-                Boolean []flags = new Boolean[updationList.Count];
-                for(int j = 0; j < updationList.Count; j++)
-                {
-                    if (updationList[j].a == 0 && updationList[j].range == 0 && (source.range == 0 || (source.range <= updationList[j].qty && (take - updationList[j].qty >= source.range))))
-                    {
-                        if (updationList[j].qty <= (source.qty - take))
-                        {
-                            take += updationList[j].qty;
-                        }
-                        else
-                        {
-                            take += updationList[j].qty - take;
-                        }
-                        flags[j] = true;
-                    }
-                    else if (updationList[j].a != 0 && updationList[j].range == 0 && (source.range == 0 || (source.range <= updationList[j].qty)))
-                    {
-                        if (updationList[j].qty <= (source.qty - take))
-                        {
-                            take += updationList[j].qty;
-                            flags[j] = true;
-                        }
-                    }
-                    else if (updationList[j].a != 0 && updationList[j].range != 0 && (source.range == 0 || (source.range <= updationList[j].qty && source.range<=(source.range-take))) && updationList[j].qty<= (source.qty-take) && updationList[j].range <= (source.qty - take))
-                    {
-                        take += updationList[j].qty;
-                        flags[j] = true;
-                    }
-                    if (take == source.qty)
-                    {
-                        for(int i = 0; i < updationList.Count; i++)
-                        {
-                            if (flags[i])
-                            {
-                                //updationList.RemoveAt(i);
-                                if (updationList[i].qty <= source.qty)
-                                {
-                                    Console.WriteLine(" Trade happends between " + updationList[i].qty + " and " + source.qty);
-                                    updationList[i].qty = 0;
-                                }
-                                else
-                                {
-                                    Console.WriteLine(" Trade happends between " + updationList[i].qty+ " with ("+source.qty + ") and " + source.qty);
-                                    updationList[i].qty -= source.qty ;
-                                     source.qty = 0;
-                                     //break;
-                                }
-                                updationList.RemoveAt(i);
-                            }
-                        }
-                        if (source.qty == 0)
-                        {
-                            updationList = new List<NewPartyWithId>();
-                            return true;
-                        }
-                        else
-                            return false;
-                    }
-                }
-                //updationList = new List<NewPartyWithId>();
-                return false;
-            }
-            else
-            {
-                if (index >= list.Count)
-                {
-                    return false;
-                }
-                else
-                {
-                    updationList.Add(list[index]);
-                    Boolean isPossible = false;
-                    for (int j = index + 1; j < list.Count; j++)
-                    {
-                        if(Recursive(j, list, source, sum + list[index].qty, updationList))
-                        {
-                            isPossible = true;
-                            break;
-                        }
-                    }
-                    if (index < updationList.Count)
-                    {
-                        updationList.RemoveAt(index);
-                    }
-                    return isPossible;   
-                }
-            }
         }
     }
 }
