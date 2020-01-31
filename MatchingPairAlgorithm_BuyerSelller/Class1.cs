@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MatchingPairAlgorithm_sellerselller;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,24 +8,7 @@ using System.Threading.Tasks;
 
 namespace MatchingPairAlgorithm_BuyerSelller
 {
-    public class NewPartyWithId
-    {
-        public int qty;
-        public int a;
-        public int range;
-        public String userId;
-        public NewPartyWithId(int q, int allOrNone, int r,String userId)
-        {
-            this.qty = q;
-            this.a = allOrNone;
-            this.range = r;
-            this.userId = userId;
-        }
-        public String toString()
-        {
-            return $"User id is {this.userId}:- Quantity is {qty} , AllOrNone{a} and {range}";
-        }
-    }
+   
     class NewDemo
     {
         System.IO.StreamWriter file;
@@ -42,11 +26,13 @@ namespace MatchingPairAlgorithm_BuyerSelller
             Console.WriteLine(line);
             file.WriteLine(line);
             int testcaseNo = 1;
+            Buyers myBuyers = new Buyers();
+            Sellers mySellers = new Sellers();
             while (lineNoForNoOfBuyerSeller < lines.Length)
             {
                 List<NewPartyWithId> buyers = new List<NewPartyWithId>();
                 List<NewPartyWithId> sellers = new List<NewPartyWithId>();
-                line = $"${testcaseNo++}) TestCase ------ ";
+                line = $"{testcaseNo++}) TestCase ------ ";
                 Console.WriteLine(line);
                 file.WriteLine(line);
                 String[] parsing = lines[lineNoForNoOfBuyerSeller].Split(' ');
