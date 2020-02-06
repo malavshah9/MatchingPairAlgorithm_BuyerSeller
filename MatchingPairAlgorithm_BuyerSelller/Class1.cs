@@ -19,19 +19,19 @@ namespace MatchingPairAlgorithm_BuyerSelller
         }
         public void ReadFromFile()
         {
-            string[] lines = System.IO.File.ReadAllLines(@"C:\Users\Public\Documents\TestCases2.txt");
+            //string[] lines = System.IO.File.ReadAllLines(@"C:\Users\Public\Documents\TestCases2.txt");
+            string[] lines = System.IO.File.ReadAllLines(@"C:\Users\Public\Documents\SingleTestCase.txt");
             int noOfTestcases = Int32.Parse(lines[0]);
             int lineNoForNoOfBuyerSeller = 1;
             line = $" ---No of Testcases:- ${noOfTestcases}--- ";
             Console.WriteLine(line);
             file.WriteLine(line);
             int testcaseNo = 1;
-            Buyers myBuyers = new Buyers();
-            Sellers mySellers = new Sellers();
+           
             while (lineNoForNoOfBuyerSeller < lines.Length)
             {
-                List<NewPartyWithId> buyers = new List<NewPartyWithId>();
-                List<NewPartyWithId> sellers = new List<NewPartyWithId>();
+                Buyers myBuyers = new Buyers();
+                Sellers mySellers = new Sellers();
                 line = $"{testcaseNo++}) TestCase ------ ";
                 Console.WriteLine(line);
                 file.WriteLine(line);
@@ -41,45 +41,39 @@ namespace MatchingPairAlgorithm_BuyerSelller
                 for (int i = lineNoForNoOfBuyerSeller+1; i <= lineNoForNoOfBuyerSeller+noOfBuyers; i++)
                 {
                     String[] buyerParsing = lines[i].Split(' ');
-                    buyers.Add(new NewPartyWithId(Int32.Parse(buyerParsing[0]), Int32.Parse(buyerParsing[1]), Int32.Parse(buyerParsing[2]),buyerParsing[3]));
+                    NewPartyWithId myNewParty = new NewPartyWithId(Int32.Parse(buyerParsing[0]), Int32.Parse(buyerParsing[1]), Int32.Parse(buyerParsing[2]), buyerParsing[3]);
+                    myBuyers.addBuyers(myNewParty);
                 }
                 for (int j = lineNoForNoOfBuyerSeller+noOfBuyers+1; j <= lineNoForNoOfBuyerSeller + noOfBuyers + noOfSellers; j++)
                 {
                     String[] sellerParsing = lines[j].Split(' ');
-                    sellers.Add(new NewPartyWithId(Int32.Parse(sellerParsing[0]), Int32.Parse(sellerParsing[1]), Int32.Parse(sellerParsing[2]),sellerParsing[3]));
+                    NewPartyWithId myNewParty = new NewPartyWithId(Int32.Parse(sellerParsing[0]), Int32.Parse(sellerParsing[1]), Int32.Parse(sellerParsing[2]), sellerParsing[3]);
+                    mySellers.addSellers(myNewParty);
                 }
-                List<NewPartyWithId> copyBuyers = copyList(buyers);
-                List<NewPartyWithId> copySellers = copyList(sellers);
-                line = "--- In Actual Order ---";
-                Console.WriteLine(line);
-                file.WriteLine(line);
-                solve(buyers, sellers);
-                line = "--- In reverse Order ---";
-                Console.WriteLine(line);
-                file.WriteLine(line);
-                solve(copyBuyers, copySellers);
+                Buyers myCopyBuyers = new Buyers();
+                Sellers myCopySellers = new Sellers();
+                myCopyBuyers.setBuyers(myBuyers.getCopyBuyers());
+                myCopySellers.setSellers(mySellers.getCopySellers());
+                Console.WriteLine(" Before Processing ");
+                myBuyers.printBuyers();
+                mySellers.printSellers();
+                Console.WriteLine(" After Processing ");
+                solve(myBuyers, mySellers);
+                Console.WriteLine(" --- Reverse Result ---");
+                solve(myCopyBuyers, myCopySellers);
                 lineNoForNoOfBuyerSeller += noOfBuyers + noOfSellers+1 ;
             }
         }
-        public void loopThrough(List<NewPartyWithId> source, List<NewPartyWithId> destination)
+        public void loopThrough(List<NewPartyWithId> source, List<NewPartyWithId> destination, Buyers buyers, Sellers sellers)
         {
+            NewRecursiveApproach nr = new NewRecursiveApproach();
             for (int i = 0; i < source.Count; i++)
             {
-                int temp = source[i].qty;
-                for (int j = 0; j < destination.Count; j++)
-                {
-                   
-                        RecursiveApproach ra = new RecursiveApproach();
-                        if (ra.subset_sum(source[i].qty, 0, destination, source[i],i,source))
-                        {
-                            source[i].qty = 0;
-                        }
-                        else
-                        {
-                            source[i].qty = temp;
-                        }
-                }
+                nr.isCompatibleGivesTrade(source[i].qty, 0, destination, source[i],i, source);
+               
             }
+            buyers.printBuyers();
+            sellers.printSellers();
         }
         public void clean(List<NewPartyWithId> list, int index)
         {
@@ -96,32 +90,9 @@ namespace MatchingPairAlgorithm_BuyerSelller
                 }
             }
         }
-        public void solve(List<NewPartyWithId> buyerss,List<NewPartyWithId> sellerss)
+        public void solve(Buyers buyers,Sellers sellers)
         {
-            loopThrough(buyerss, sellerss);
-            clean(buyerss, 0);
-            clean(sellerss, 0);
-            loopThrough(sellerss, buyerss);
-            clean(buyerss, 0);
-            clean(sellerss, 0);
-            line = "--- Remaing Buyers ---";
-            Console.WriteLine(line);
-            file.WriteLine(line);
-            for (int i = 0; i < buyerss.Count; i++)
-            {
-                line = buyerss[i].toString();
-                Console.WriteLine(line);
-                file.WriteLine(line);
-            }
-            line = "--- Remaing Sellers ---";
-            Console.WriteLine(line);
-            file.WriteLine(line);
-            for (int i = 0; i < sellerss.Count; i++)
-            {
-                line = sellerss[i].toString();
-                Console.WriteLine(line);
-                file.WriteLine(line);
-            }
+            loopThrough(buyers.getBuyers(), sellers.getsellers(),buyers,sellers);
         }
         public List<NewPartyWithId> copyList(List<NewPartyWithId> list)
         {
@@ -134,8 +105,8 @@ namespace MatchingPairAlgorithm_BuyerSelller
         }
         public void consoleWorks()
         {
-            List<NewPartyWithId> buyers = new List<NewPartyWithId>();
-            List<NewPartyWithId> sellers = new List<NewPartyWithId>();
+            Buyers myBuyers = new Buyers();
+            Sellers mySellers = new Sellers();
             int input = default(int);
             int qty = 0;
             int a = 0;
@@ -147,15 +118,34 @@ namespace MatchingPairAlgorithm_BuyerSelller
                 Console.WriteLine("Buyers:");
                 while (input != -999)
                 {
-                    Console.WriteLine("Enter UserId");
-                    String uid = Console.ReadLine();
+                    String choice, uid;
+                    Console.WriteLine(" Is Parent or Child: Enter P for Parent and C for Child");
+                    choice = Console.ReadLine();
+                    if (choice == "C")
+                    {
+                        Console.WriteLine(" Enter Parent Node UserId: ");
+                        uid = Console.ReadLine();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Enter UserId");
+                        uid = Console.ReadLine();
+                        Console.WriteLine("Enter 1 for ALL or Nothing Condition ,0 for nothing");
+                        a = Int32.Parse(Console.ReadLine());
+                        Console.WriteLine("Enter Ticket Size");
+                        r = Int32.Parse(Console.ReadLine());
+                    }
                     Console.WriteLine("Enter Qty");
                     qty = Int32.Parse(Console.ReadLine());
-                    Console.WriteLine("Enter 1 for ALL or Nothing Condition ,0 for nothing");
-                    a = Int32.Parse(Console.ReadLine());
-                    Console.WriteLine("Enter Ticket Size");
-                    r = Int32.Parse(Console.ReadLine());
-                    buyers.Add(new NewPartyWithId(qty, a, r,uid));
+                    NewPartyWithId myNewParty = new NewPartyWithId(qty, a, r, uid);
+                    if (choice == "C")
+                    {
+                        myBuyers.addChild(uid, myNewParty);
+                    }
+                    else
+                    {
+                        myBuyers.addBuyers(myNewParty);
+                    }
                     Console.WriteLine("Enter -999 to Stop,anyother number to continue");
                     input = Int32.Parse(Console.ReadLine());
                 }
@@ -163,24 +153,53 @@ namespace MatchingPairAlgorithm_BuyerSelller
                 input = 0;
                 while (input != -999)
                 {
-                    Console.WriteLine("Enter UserId");
-                    String uid = Console.ReadLine();
-                    Console.WriteLine("Enter Qty");
-                    qty = Int32.Parse(Console.ReadLine());
-                    Console.WriteLine("Enter 1 for ALL or Nothing Condition ,0 for nothing");
-                    a = Int32.Parse(Console.ReadLine());
-                    Console.WriteLine("Enter Ticket Size");
-                    r = Int32.Parse(Console.ReadLine());
-                    sellers.Add(new NewPartyWithId(qty, a, r,uid));
-                    Console.WriteLine("Enter -999 to Stop,anyother number to continue");
-                    input = Int32.Parse(Console.ReadLine());
+                    Console.WriteLine("Enter -999 to Stop");
+                    Console.WriteLine("Sellers:");
+                    while (input != -999)
+                    {
+                        String choice, uid;
+                        Console.WriteLine(" Is Parent or Child: Enter P for Parent and C for Child");
+                        choice = Console.ReadLine();
+                        if (choice == "C")
+                        {
+                            Console.WriteLine(" Enter Parent Node UserId: ");
+                            uid = Console.ReadLine();
+                        }
+                        else
+                        {
+                            Console.WriteLine("Enter UserId");
+                            uid = Console.ReadLine();
+                            Console.WriteLine("Enter 1 for ALL or Nothing Condition ,0 for nothing");
+                            a = Int32.Parse(Console.ReadLine());
+                            Console.WriteLine("Enter Ticket Size");
+                            r = Int32.Parse(Console.ReadLine());
+                        }
+                        Console.WriteLine("Enter Qty");
+                        qty = Int32.Parse(Console.ReadLine());
+                        NewPartyWithId myNewParty = new NewPartyWithId(qty, a, r, uid);
+                        if (choice == "C")
+                        {
+                            mySellers.addChild(uid, myNewParty);
+                        }
+                        else
+                        {
+                            mySellers.addSellers(myNewParty);
+                        }
+                        Console.WriteLine("Enter -999 to Stop,any other number to continue");
+                        input = Int32.Parse(Console.ReadLine());
+                    }
+                    Buyers myCopyBuyers = new Buyers();
+                    Sellers myCopySellers = new Sellers();
+                    myCopyBuyers.setBuyers(myBuyers.getCopyBuyers());
+                    myCopySellers.setSellers(mySellers.getCopySellers());
+                    myBuyers.printBuyers();
+                    mySellers.printSellers();
+                    Console.WriteLine(" --- Actual Result ---");
+                    solve(myBuyers, mySellers);
+                    Console.WriteLine(" --- Reverse Result ---");
+                    solve(myCopyBuyers, myCopySellers);
+                    readI = (char)Console.ReadLine().ToCharArray()[0];
                 }
-                List<NewPartyWithId> copyBuyers = copyList(buyers);
-                List<NewPartyWithId> copySellers = copyList(sellers);
-                solve(buyers, sellers);
-                Console.WriteLine(" --- Reverse Result ---");
-                solve(copySellers, copyBuyers);
-                readI = (char)Console.ReadLine().ToCharArray()[0];
             }
         }
         static void Main(string[] args)
