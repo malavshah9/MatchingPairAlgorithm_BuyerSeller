@@ -23,11 +23,10 @@ namespace MatchingPairAlgorithm_BuyerSelller
             string[] lines = System.IO.File.ReadAllLines(@"C:\Users\Public\Documents\SingleTestCase.txt");
             int noOfTestcases = Int32.Parse(lines[0]);
             int lineNoForNoOfBuyerSeller = 1;
-            line = $" ---No of Testcases:- ${noOfTestcases}--- ";
+            line = $" ---No of Testcases: {noOfTestcases}--- ";
             Console.WriteLine(line);
             file.WriteLine(line);
             int testcaseNo = 1;
-           
             while (lineNoForNoOfBuyerSeller < lines.Length)
             {
                 Buyers myBuyers = new Buyers();
@@ -52,15 +51,22 @@ namespace MatchingPairAlgorithm_BuyerSelller
                 }
                 Buyers myCopyBuyers = new Buyers();
                 Sellers myCopySellers = new Sellers();
-                myCopyBuyers.setBuyers(myBuyers.getCopyBuyers());
-                myCopySellers.setSellers(mySellers.getCopySellers());
-                Console.WriteLine(" Before Processing ");
-                myBuyers.printBuyers();
-                mySellers.printSellers();
-                Console.WriteLine(" After Processing ");
+                myCopyBuyers.setBuyers(mySellers.getCopySellers());
+                myCopySellers.setSellers(myBuyers.getCopyBuyers());
+                line = " Before Processing ";
+                Console.WriteLine(line);
+                file.WriteLine(line);
+                printList(myBuyers, mySellers,true);
+                line = " After Processing ";
+                Console.WriteLine(line);
+                file.WriteLine(line);
                 solve(myBuyers, mySellers);
-                Console.WriteLine(" --- Reverse Result ---");
+                printList(myBuyers, mySellers,true);
+                line = " --- Reverse Result ---";
+                Console.WriteLine(line);
+                file.WriteLine(line);
                 solve(myCopyBuyers, myCopySellers);
+                printList(myBuyers, mySellers,true);
                 lineNoForNoOfBuyerSeller += noOfBuyers + noOfSellers+1 ;
             }
         }
@@ -70,10 +76,7 @@ namespace MatchingPairAlgorithm_BuyerSelller
             for (int i = 0; i < source.Count; i++)
             {
                 nr.isCompatibleGivesTrade(source[i].qty, 0, destination, source[i],i, source);
-               
             }
-            buyers.printBuyers();
-            sellers.printSellers();
         }
         public void clean(List<NewPartyWithId> list, int index)
         {
@@ -89,6 +92,11 @@ namespace MatchingPairAlgorithm_BuyerSelller
                     clean(list, index + 1);
                 }
             }
+        }
+        public void printList(Buyers buyers,Sellers sellers,Boolean fileWrite)
+        {
+            buyers.printBuyers(fileWrite,file);
+            sellers.printSellers(fileWrite,file);
         }
         public void solve(Buyers buyers,Sellers sellers)
         {
