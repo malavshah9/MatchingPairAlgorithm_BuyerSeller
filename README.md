@@ -75,3 +75,11 @@ In the main function
 } 
 
 ```
+
+## Approach
+
+Dynamic Programming
+
+## Testcases
+
+File named as Tescases inside home directory in this repository.
